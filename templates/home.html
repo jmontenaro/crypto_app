@@ -9,12 +9,17 @@
 <body>
   <script>
     d3.json("/sample_data").then(function(data) {
-      d3.select("body")
-        .selectAll("div")
-        .data(data)
+      var body = d3.select("body");
+      var table = body.append("table");
+      var thead = table.append("thead");
+      var tbody = table.append("tbody");
+      
+      var th = thead.append("tr")
+        .selectAll("th")
+        .data(['Crypto', data[0].pricing_history.map(function(d) { return d.date; })])
         .enter()
-        .append("div")
-        .text((d) => d.name);
+        .append("th")
+        .text(function (datum) { return datum });
     })
   </script>
 </body>
