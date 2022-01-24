@@ -11,15 +11,20 @@
     d3.json("/sample_data").then(function(data) {
       var body = d3.select("body");
       var table = body.append("table");
+
       var thead = table.append("thead");
-      var tbody = table.append("tbody");
-      
       var th = thead.append("tr")
         .selectAll("th")
-        .data(['Crypto', data[0].pricing_history.map(function(d) { return d.date; })])
+        .data(['Crypto'].concat(data[0].pricing_history.map(function(d) { return d.date; })))
         .enter()
         .append("th")
         .text(function (datum) { return datum });
+
+      var tbody = table.append("tbody");
+      var tr = tbody.selectAll("tr")
+        .data(json)
+        .enter()
+        .append("tr")
     })
   </script>
 </body>
