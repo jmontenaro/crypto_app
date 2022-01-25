@@ -10,12 +10,16 @@
   <label for="initial_investment">Initial Investment:</label>
   <input type="text" id="initial_investment" name="initial_investment" value="100"><br><br>
   <label for="investment_date">Investment Date:</label>
-  <select class="investment_date" id="investment_date" name="investment_date">
+  <select id="investment_date" name="investment_date">
   </select><br><br>
-  <input type="submit" value="Update"><br><br>
-
+  <input type="submit" value="Update" onclick="update()"><br><br>
+  
   <script>
+    var dataset;
+    
     d3.json("/sample_data").then(function(data) {
+      dataset = data;
+      
       var options = d3.select("#investment_date")
         .selectAll("option")
         .data(data[0].pricing_history.map(function(d) { return d.date; }))
@@ -23,29 +27,33 @@
         .append("option")
         .text(function (d) { return d; });      
 
+      update();
+    })
+
+    function update() {
       var body = d3.select("body");
       var table = body.append("table");
 
       var thead = table.append("thead");
       var th = thead.append("tr")
         .selectAll("th")
-        .data(['Crypto'].concat(data[0].pricing_history.map(function(d) { return d.date; })))
+        .data(['Crypto'].concat(dataset[0].pricing_history.map(function(d) { return d.date; })))
         .enter()
         .append("th")
         .text(function (datum) { return datum; });
 
       var tbody = table.append("tbody");
       var tr = tbody.selectAll("tr")
-        .data(data)
+        .data(dataset)
         .enter()
         .append("tr");
       var td = tr.selectAll("td")
-        .data(function(datum,i) {
-          return [datum.name].concat(datum.pricing_history.map(function(d) { return d.price; }));
+        .data(function(datum, i) {
+          return [datum.name].concat(datum.pricing_history.map(function(d) { return d.price * Math.random(); }));
         })
         .enter()
         .append("td")
-        .text(function (datum, i) { return datum; });
-    })
+        .text(function (datum, i) { return datum; });      
+    };
   </script>
 </body>
