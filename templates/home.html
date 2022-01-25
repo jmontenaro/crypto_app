@@ -7,62 +7,84 @@
 </head>
 
 <body>
-  <label for="initial_investment">Initial Investment:</label>
-  <input type="text" id="initial_investment" name="initial_investment" value="100"><br><br>
+  <label for="investment">Initial Investment:</label>
+  <input type="text" id="investment" name="investment" value="100"><br><br>
   <label for="investment_date">Investment Date:</label>
   <select id="investment_date" name="investment_date">
   </select><br><br>
   <input type="submit" value="Update" onclick="update()"><br><br>
   
   <script>
-    var dataset;
+    var pricing_dates = [];
+    var pricing = [];
     
     d3.json("/sample_data").then(function(data) {
-      dataset = data;
+      pricing_dates = data[0].pricing_history.map(function(d) { return d.date; });
+      for (var i = 0; i < data.length; i++) {
+        pricing[i] = [data[i].name].concat(data[i].pricing_history.map(function(d) { return d.price; }));
+      }
       
       var options = d3.select("#investment_date")
         .selectAll("option")
-        .data(data[0].pricing_history.map(function(d) { return d.date; }))
+        .data(pricing_dates)
         .enter()
         .append("option")
-        .text(function (d) { return d; });      
+        .text(function (datum) { return datum; });      
 
       var body = d3.select("body");
       var table = body.append("table");
 
       var thead = table.append("thead");
-      var th = thead.append("tr")
-        .selectAll("th")
-        .data(['Crypto'].concat(dataset[0].pricing_history.map(function(d) { return d.date; })))
+      var tr = thead.append("tr")
+      var th = tr.selectAll("th")
+        .data(['Crypto'].concat(pricing_dates))
         .enter()
         .append("th")
         .text(function (datum) { return datum; });
 
       var tbody = table.append("tbody");
       var tr = tbody.selectAll("tr")
-        .data(dataset)
+        .data(pricing)
         .enter()
         .append("tr");
       var td = tr.selectAll("td")
-        .data(function(datum, i) {
-          return [datum.name].concat(datum.pricing_history.map(function(d) { return d.price * Math.random(); }));
-        })
+        .data(function(datum) { return datum; })
         .enter()
-        .append("td");
+        .append("td")
 
       update();
     })
 
     function update() {
+      var value = [];
+      var investment = d3.select("#investment").property("value");
+      var investment_date = d3.select("#investment_date").property("value");
+      
+      for (var i = 0; i < pricing.length; i++) {
+        var shares = 0;
+        value[i] = [];
+        value[i][0] = pricing[i][0];
+        for (var j = 1; j < pricing[i].length; j++) {
+          if (investment_date > pricing_dates[j-1]) {
+            value[i][j] = "-"
+          }
+          else if (investment_date == pricing_dates[j-1]) {
+            shares = investment / pricing [i][j];
+            value[i][j] = d3.format("($,.2f")(investment);
+          }
+          else {
+            value[i][j] = d3.format("($,.2f")(shares * pricing[i][j]);
+          }
+        }
+      }
+      
       var tbody = d3.select("tbody");
       var tr = tbody.selectAll("tr")
-        .data(dataset);
-      
+        .data(value);
+
       var td = tr.selectAll("td")
-        .data(function(datum, i) {
-          return [datum.name].concat(datum.pricing_history.map(function(d) { return d.price * Math.random(); }));
-        })
-        .text(function (datum, i) { return datum; });      
+        .data(function(datum) { return datum; })
+        .text(function(datum) { return datum; });
     };
   </script>
 </body>
