@@ -27,10 +27,6 @@
         .append("option")
         .text(function (d) { return d; });      
 
-      update();
-    })
-
-    function update() {
       var body = d3.select("body");
       var table = body.append("table");
 
@@ -52,7 +48,20 @@
           return [datum.name].concat(datum.pricing_history.map(function(d) { return d.price * Math.random(); }));
         })
         .enter()
-        .append("td")
+        .append("td");
+
+      update();
+    })
+
+    function update() {
+      var tbody = d3.select("tbody");
+      var tr = tbody.selectAll("tr")
+        .data(dataset);
+      
+      var td = tr.selectAll("td")
+        .data(function(datum, i) {
+          return [datum.name].concat(datum.pricing_history.map(function(d) { return d.price * Math.random(); }));
+        })
         .text(function (datum, i) { return datum; });      
     };
   </script>
