@@ -21,7 +21,15 @@
     d3.json("/sample_data").then(function(data) {
       pricing_dates = data[0].pricing_history.map(function(d) { return d.date; });
       for (var i = 0; i < data.length; i++) {
-        pricing[i] = [data[i].name].concat(data[i].pricing_history.map(function(d) { return d.price; }));
+        my_pricing_dates = data[i].pricing_history.map(function(d) { return d.date; });
+        my_pricing_prices = data[i].pricing_history.map(function(d) { return d.price; });
+        for (var j = 0; j < pricing_dates.length; j++) {
+          if (my_pricing_dates[j] != pricing_dates[j]) {
+            my_pricing_dates.splice(j, 0, pricing_dates[j]);
+            my_pricing_prices.splice(j, 0, "-");
+          }
+        }
+        pricing[i] = [data[i].name].concat(my_pricing_prices);
       }
       
       var options = d3.select("#investment_date")
@@ -69,11 +77,22 @@
             value[i][j] = "-"
           }
           else if (investment_date == pricing_dates[j-1]) {
-            shares = investment / pricing [i][j];
-            value[i][j] = d3.format("($,.2f")(investment);
+            if (pricing[i][j] != "-") {
+              shares = investment / pricing [i][j];
+              value[i][j] = d3.format("($,.2f")(investment);
+            }
+            else {
+              shares = 0;
+              value[i][j] = "-"
+            }
           }
-          else {
-            value[i][j] = d3.format("($,.2f")(shares * pricing[i][j]);
+          else if (investment_date < pricing_dates[j-1]) {
+            if (pricing[i][j] != "-") {
+              value[i][j] = d3.format("($,.2f")(shares * pricing[i][j]);
+            }
+            else {
+              value[i][j] = "-"
+            }
           }
         }
       }

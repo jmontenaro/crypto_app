@@ -23,7 +23,6 @@
 import json
 import logging
 import os
-import pandas
 from flask import Flask, render_template
 from pyspark.sql.types import *
 from pyspark.sql import SparkSession
@@ -47,7 +46,7 @@ def sample_data():
 
   dataset = []
 
-  df = spark.sql("select * from default.sample_06").collect()
+  df = spark.sql("select * from crypto_db.crypto_monthly_ext order by code, date").collect()
   for row in df:
     for i in dataset:
       if (i.get("name") == row['code']):
