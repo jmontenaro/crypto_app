@@ -1,30 +1,7 @@
-#select
-#  from_timestamp(to_timestamp(a.ts), 'yyyy-MM-dd') `date`
-#  , a.digital_currency_code code
-#  , a.close
-#from
-#  crypto_timeseries a
-#inner join (
-#  select
-#    max(ts) ts,
-#    digital_currency_code
-#  from
-#    crypto_timeseries
-#  group by
-#    digital_currency_code,
-#    date_trunc('DAY', to_timestamp(ts))
-#) b on
-#  a.ts = b.ts
-#  and a.digital_currency_code = b.digital_currency_code
-#order by
-#  code,
-#  `date`;
-
 import json
 import logging
 import os
 from flask import Flask, render_template
-from pyspark.sql.types import *
 from pyspark.sql import SparkSession
 
 log = logging.getLogger('werkzeug')
@@ -45,8 +22,7 @@ def sample_data():
     .getOrCreate()
 
   dataset = []
-
-  df = spark.sql("select * from crypto_db.crypto_monthly_ext order by code, date").collect()
+  df = spark.read.option("header", True).csv("static/prices.txt").collect()
   for row in df:
     for i in dataset:
       if (i.get("name") == row['code']):
