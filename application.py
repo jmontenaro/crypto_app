@@ -22,7 +22,7 @@ def sample_data():
     .getOrCreate()
 
   dataset = []
-  df = spark.read.option("header", True).csv("static/prices.txt").collect()
+  df = spark.read.option("header", True).csv("static/prices.csv").collect()
   for row in df:
     for i in dataset:
       if (i.get("name") == row['code']):
