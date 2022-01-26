@@ -15,6 +15,12 @@
   <input type="submit" value="Update" onclick="update()"><br><br>
   
   <script>
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if (urlParams.get('investment') != null) {
+      document.getElementById('investment').value = urlParams.get('investment');
+    }
+    
     var pricing_dates = [];
     var pricing = [];
     
