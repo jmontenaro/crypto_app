@@ -7,12 +7,11 @@
 </head>
 
 <body>
-  <label for="investment">Initial Investment:</label>
-  <input type="text" id="investment" name="investment" value="100"><br><br>
-  <label for="investment_date">Investment Date:</label>
-  <select id="investment_date" name="investment_date">
-  </select><br><br>
-  <input type="submit" value="Update" onclick="update()"><br><br>
+  <h1>Cryptocurrency Earnings Evaluator</h1>
+  <div class="control">
+    <div class="control_item"><label for="investment">Initial Investment:</label><input type="text" id="investment" name="investment" value="100"></div>
+    <div class="control_item"><label for="investment_date">Investment Date:</label><select id="investment_date" name="investment_date"></select></div>
+    <div class="control_item"><input type="submit" value="Update" onclick="update()"></div>
   
   <script>
     const queryString = window.location.search;
